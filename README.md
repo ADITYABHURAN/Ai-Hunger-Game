@@ -43,11 +43,11 @@ ai_hunger_games/
 ## 📸 See It In Action
 
 ### Starting the Simulation
-![Simulation Start](docs/screenshot1.png)
+![Simulation Start](ai_hunger_games/docs/screenshot1.png)
 *AI agents are initialized with unique personalities and compete by answering questions*
 
 ### Final Results
-![Simulation Results](docs/screenshot2.png)
+![Simulation Results](ai_hunger_games/docs/screenshot2.png)
 *The Scientist wins! See complete statistics, votes received, and generational evolution*
 
 ---
@@ -70,7 +70,7 @@ pip install -r requirements.txt
 
 ### Step 2: Navigate to Project
 ```powershell
-cd ai_hunger_games
+cd Ai-Hunger-Game/ai_hunger_games
 ```
 
 ### Step 3: Run It!
