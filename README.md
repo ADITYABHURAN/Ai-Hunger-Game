@@ -43,11 +43,11 @@ ai_hunger_games/
 ## 📸 See It In Action
 
 ### Starting the Simulation
-![Simulation Start](ai_hunger_games/docs/screenshot1.png)
+![Simulation Results](ai_hunger_games/docs/screenshot2.png)
 *AI agents are initialized with unique personalities and compete by answering questions*
 
 ### Final Results
-![Simulation Results](ai_hunger_games/docs/screenshot2.png)
+![Simulation Start](ai_hunger_games/docs/screenshot1.png)
 *The Scientist wins! See complete statistics, votes received, and generational evolution*
 
 ---
