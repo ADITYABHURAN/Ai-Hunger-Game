@@ -187,6 +187,8 @@ class SimulationLogger:
         
         # Prepare CSV rows
         rows = []
+        all_fieldnames = set(["Round", "Question", "Eliminated", "New Agent", "Agent Count"])
+        
         for round_data in self.simulation_data["rounds"]:
             row = {
                 "Round": round_data["round_number"],
@@ -199,15 +201,21 @@ class SimulationLogger:
             # Add vote counts if available
             if "votes" in round_data["vote_results"]:
                 for agent, votes in round_data["vote_results"]["votes"].items():
-                    row[f"{agent}_votes"] = votes
+                    field_name = f"{agent}_votes"
+                    row[field_name] = votes
+                    all_fieldnames.add(field_name)
             
             rows.append(row)
         
         if rows:
-            # Write CSV
+            # Write CSV with all possible fieldnames
             with open(filepath, 'w', newline='', encoding='utf-8') as f:
-                fieldnames = rows[0].keys()
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                # Sort fieldnames for consistent output
+                base_fields = ["Round", "Question", "Eliminated", "New Agent", "Agent Count"]
+                vote_fields = sorted([f for f in all_fieldnames if f not in base_fields])
+                fieldnames = base_fields + vote_fields
+                
+                writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
                 writer.writeheader()
                 writer.writerows(rows)
             

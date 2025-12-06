@@ -7,7 +7,7 @@ from typing import Dict, Any
 
 # Ollama Configuration
 OLLAMA_BASE_URL: str = "http://localhost:11434"
-OLLAMA_MODEL: str = "llama2"  # Default model for all agents
+OLLAMA_MODEL: str = "llama3.2:1b"  # Default model for all agents
 OLLAMA_TIMEOUT: int = 120  # Timeout in seconds
 
 # Simulation Configuration

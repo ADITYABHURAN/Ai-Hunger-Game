@@ -19,7 +19,8 @@ def parse_arguments():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python main.py
+  python main.py                                    # Use default questions
+  python main.py --interactive                      # Input your own questions
   python main.py --rounds 10 --agents 12
   python main.py --model mistral --voting ranked-choice
   python main.py --questions "What is AI?" "How does evolution work?"
@@ -73,6 +74,12 @@ Examples:
         help='Path to custom personalities JSON file'
     )
     
+    parser.add_argument(
+        '--interactive',
+        action='store_true',
+        help='Interactive mode: input your own questions for each round'
+    )
+    
     return parser.parse_args()
 
 
@@ -108,7 +115,19 @@ def main():
     
     # Prepare questions
     questions = None
-    if args.questions:
+    if args.interactive:
+        print("🎤 Interactive Mode: You will be asked to input questions for each round\n")
+        questions = []
+        for i in range(args.rounds):
+            while True:
+                question = input(f"❓ Question for Round {i+1}/{args.rounds}: ").strip()
+                if question:
+                    questions.append(question)
+                    break
+                else:
+                    print("   ⚠️  Question cannot be empty. Please try again.")
+        print(f"\n✅ {len(questions)} questions collected!")
+    elif args.questions:
         questions = args.questions
         print(f"📝 Using {len(questions)} custom questions")
     else:
