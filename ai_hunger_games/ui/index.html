@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Hunger Games - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .control-group input,
+        .control-group select,
+        .control-group textarea {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus,
+        .control-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .control-group textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-idle { background: #e0e0e0; color: #666; }
+        .status-running { background: #ffd700; color: #333; }
+        .status-completed { background: #4caf50; color: white; }
+        .status-error { background: #f44336; color: white; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .agent-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .agent-card h3 {
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+
+        .agent-card p {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin: 3px 0;
+        }
+
+        .round-item {
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+
+        .round-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .vote-bar {
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 4px;
+            margin: 5px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vote-bar-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            color: white;
+            font-weight: 600;
+            transition: width 0.5s;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 AI Hunger Games 🎮</h1>
+            <p>Multi-Agent Evolution & Voting Simulator</p>
+        </header>
+
+        <!-- Configuration Card -->
+        <div class="card">
+            <h2>⚙️ Configuration</h2>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="numAgents">Number of Agents:</label>
+                    <input type="number" id="numAgents" value="8" min="2" max="20">
+                </div>
+                <div class="control-group">
+                    <label for="numRounds">Number of Rounds:</label>
+                    <input type="number" id="numRounds" value="8" min="1" max="20">
+                </div>
+                <div class="control-group">
+                    <label for="model">Ollama Model:</label>
+                    <input type="text" id="model" value="llama2">
+                </div>
+                <div class="control-group">
+                    <label for="votingMethod">Voting Method:</label>
+                    <select id="votingMethod">
+                        <option value="single-choice">Single Choice</option>
+                        <option value="ranked-choice">Ranked Choice</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="questions">Questions (one per line, optional):</label>
+                <textarea id="questions" placeholder="Leave empty to use default questions"></textarea>
+            </div>
+            <button id="startBtn" onclick="startSimulation()">🚀 Start Simulation</button>
+        </div>
+
+        <!-- Status Card -->
+        <div class="card">
+            <h2>📊 Status</h2>
+            <div id="statusDisplay">
+                <span class="status-badge status-idle">Idle</span>
+                <p style="margin-top: 10px;">Ready to start simulation</p>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden">
+            <!-- Final Agents Card -->
+            <div class="card">
+                <h2>🏆 Final Survivors</h2>
+                <div id="finalAgents"></div>
+            </div>
+
+            <!-- Rounds History Card -->
+            <div class="card">
+                <h2>📜 Round History</h2>
+                <div id="roundHistory"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let statusCheckInterval = null;
+
+        async function startSimulation() {
+            const numAgents = parseInt(document.getElementById('numAgents').value);
+            const numRounds = parseInt(document.getElementById('numRounds').value);
+            const model = document.getElementById('model').value;
+            const votingMethod = document.getElementById('votingMethod').value;
+            const questionsText = document.getElementById('questions').value;
+
+            const questions = questionsText.trim() ? 
+                questionsText.split('\n').filter(q => q.trim()) : null;
+
+            const config = {
+                num_agents: numAgents,
+                num_rounds: numRounds,
+                model: model,
+                voting_method: votingMethod,
+                questions: questions
+            };
+
+            try {
+                document.getElementById('startBtn').disabled = true;
+                updateStatus('running', 'Starting simulation...');
+
+                const response = await fetch(`${API_BASE}/simulation/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(config)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to start simulation');
+                }
+
+                // Start polling for status
+                startStatusPolling();
+            } catch (error) {
+                console.error('Error starting simulation:', error);
+                updateStatus('error', `Error: ${error.message}`);
+                document.getElementById('startBtn').disabled = false;
+            }
+        }
+
+        function startStatusPolling() {
+            statusCheckInterval = setInterval(checkStatus, 2000);
+        }
+
+        function stopStatusPolling() {
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+                statusCheckInterval = null;
+            }
+        }
+
+        async function checkStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/simulation/status`);
+                const status = await response.json();
+
+                updateStatus(status.status, status.message);
+
+                if (status.status === 'completed') {
+                    stopStatusPolling();
+                    loadResults();
+                    document.getElementById('startBtn').disabled = false;
+                } else if (status.status === 'error') {
+                    stopStatusPolling();
+                    document.getElementById('startBtn').disabled = false;
+                }
+            } catch (error) {
+                console.error('Error checking status:', error);
+            }
+        }
+
+        function updateStatus(status, message) {
+            const statusDisplay = document.getElementById('statusDisplay');
+            const badgeClass = `status-${status}`;
+            
+            statusDisplay.innerHTML = `
+                <span class="status-badge ${badgeClass}">${status}</span>
+                <p style="margin-top: 10px;">${message}</p>
+            `;
+        }
+
+        async function loadResults() {
+            try {
+                const response = await fetch(`${API_BASE}/simulation/results`);
+                const results = await response.json();
+
+                displayFinalAgents(results.final_agents);
+                displayRoundHistory(results);
+
+                document.getElementById('resultsSection').classList.remove('hidden');
+            } catch (error) {
+                console.error('Error loading results:', error);
+            }
+        }
+
+        function displayFinalAgents(agents) {
+            const container = document.getElementById('finalAgents');
+            
+            // Sort by votes received
+            const sortedAgents = agents.sort((a, b) => b.votes_received - a.votes_received);
+
+            container.innerHTML = sortedAgents.map((agent, index) => `
+                <div class="agent-card">
+                    <h3>${index + 1}. ${agent.name}</h3>
+                    <p>Generation: ${agent.generation}</p>
+                    <p>Rounds Survived: ${agent.rounds_survived}</p>
+                    <p>Votes Received: ${agent.votes_received}</p>
+                    ${agent.parent_name ? `<p>Parent: ${agent.parent_name}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function displayRoundHistory(results) {
+            const container = document.getElementById('roundHistory');
+            const data = results.final_agents; // This would need full data from logger
+            
+            // For now, show a summary
+            container.innerHTML = `
+                <div class="round-item">
+                    <h3>Simulation Summary</h3>
+                    <p><strong>Total Agents Created:</strong> ${results.statistics?.total_agents_created || 'N/A'}</p>
+                    <p><strong>Rounds Completed:</strong> ${results.statistics?.total_rounds || 'N/A'}</p>
+                    <p><strong>LLM Requests:</strong> ${results.statistics?.llm_stats?.total_requests || 'N/A'}</p>
+                    <p><strong>Success Rate:</strong> ${results.statistics?.llm_stats?.success_rate || 'N/A'}</p>
+                </div>
+            `;
+        }
+
+        // Check if API is available on load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (!response.ok) {
+                    updateStatus('error', 'API server not reachable. Please start the server.');
+                }
+            } catch (error) {
+                updateStatus('error', 'API server not reachable. Please start the server with: python -m ai_hunger_games.api.server');
+            }
+        });
+    </script>
+</body>
+</html>
