@@ -55,10 +55,42 @@ ollama serve
 
 ## Quick Start
 
-Run the simulation:
-```bash
+### Step-by-Step Guide
+
+**Step 1: Check Ollama is running**
+```powershell
+ollama list
+```
+(If this shows models, Ollama is running. If not, it auto-starts on Windows - just wait 5 seconds and try again)
+
+**Step 2: Navigate to project**
+```powershell
+cd "C:\Users\Aditya Bhuran\OneDrive - Pace University\Desktop\Ai Hunger Game\ai_hunger_games"
+```
+
+**Step 3: Activate virtual environment**
+```powershell
+..\.venv\Scripts\Activate.ps1
+```
+
+**Step 4: Run the simulation**
+
+Quick demo (2 minutes):
+```powershell
+python main.py --rounds 2 --agents 4
+```
+
+Interactive demo (best for presentations):
+```powershell
+python main.py --interactive --rounds 3 --agents 6
+```
+
+Full simulation (8 rounds):
+```powershell
 python main.py
 ```
+
+### Other Options
 
 Run with custom questions:
 ```bash
