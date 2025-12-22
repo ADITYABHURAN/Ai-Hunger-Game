@@ -22,6 +22,7 @@ Imagine a competition where AI agents with different personalities (Philosopher,
 
 ## Project Structure
 
+
 ```
 ai_hunger_games/
 │── main.py                  # Entry point for simulation
